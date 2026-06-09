@@ -109,7 +109,7 @@ COACH_SUMMARY = {
     "Jim Leonhard": "덴버의 어시스턴트 HC를 거쳐 버팔로의 수비진을 3-4 포메이션 기반으로 개편하기 위해 부임한 전술가.",
     "Sean Duggan": "그린베이 라인배커 코치 출신으로 제프 하프리 신임 감독 체제의 마이애미 수비 전술을 보좌하는 인물.",
     "Zak Kuhr": "팀 내 라인배커 코치이자 인터림 DC를 거쳐 정식 수비 코디네이터로 보직이 승진된 내부 인사.",
-    "Brian Duker": "라이온스와 마이애미의 세컨더리 코치를 거쳐 에런 글렌 신임 감독 사단의 수비 전술을 조율하는 코치.",
+    "Brian Duker": "라이온스와 마이애미의 세컨더리 코치를 거쳐 에런 글렌 신임 감독 사단의 수비 전술 조율하는 코치.",
     "Anthony Weaver": "마이애미 DC를 거쳐 제시 민터 신임 감독 체제의 레이븐스 프런트 세븐을 재건하러 합류한 베테랑.",
     "Al Golden": "팀 내 라인배커 코치에서 내부 승진하여 잭 테일러 감독 체제의 수비 전술 플레이콜을 전담하는 인물.",
     "Mike Rutenberg": "제츠와 애틀랜타의 패스게임 코디네이터를 거쳐 토드 몽켄 사단의 수비 수장으로 낙점된 인물.",
@@ -133,7 +133,6 @@ COACH_SUMMARY = {
     "Jeff Ulbrich": "제츠의 DC를 거쳐 케빈 스테판스키 신임 감독 체제 애틀랜타의 수비 전술을 전담하게 된 인물.",
     "Ejiro Evero": "데이브 카날레스 감독의 신임 속에 팬서스의 3-4 베이스 수비 시스템 체계를 유지·통제하는 코치.",
     "Brandon Staley": "차저스 HC 경력 이후 켈렌 무어 신임 감독 체제 세인츠의 수비 조직력을 재정비하러 합류한 전술가.",
-    "Todd Bowles": "수비 중심 팀 컬러를 유지하기 위해 감독직과 수비 플레이콜러 역할을 겸임하고 있는 인물.",
     "Nick Rallis": "마이크 라플뢰르 신임 감독 체제하에서도 카디널스의 젊은 수비진 전술 설계를 계속 전담하는 DC.",
     "Chris Shula": "숀 맥베이 감독 시스템 안에서 단계별 코치를 거쳐 내부 승진으로 램스 수비를 통제하는 코치.",
     "Raheem Morris": "애틀랜타 감독직 이후 카일 섀너핸 사단에 합류하여 포티나이너스의 수비진을 지휘하는 베테랑.",
@@ -156,6 +155,7 @@ LEGEND_LIFESPANS = {
 }
 
 # --- 1. 통합 데이터베이스 ---
+# 💡 수정사항: 토드 보울스의 DC 항목을 삭제하여 중복을 해결했습니다.
 RAW_DATA = """
 Joe Brady,Sean Payton,Buffalo Bills,HC,2017–2018: 뉴올리언스 세인츠 (공격 어시스턴트) | 2020–2021: 캐롤라이나 팬서스 (OC) | 2022–2023: 버팔로 빌스 (QB 코치) | 2023–2025: 버팔로 빌스 (인터림 / 정식 OC)
 Jeff Hafley,Matt LaFleur,Miami Dolphins,HC,2012–2013: 탬파베이 버커니어스 (공격 어시스턴트 / DB 코치) | 2014–2015: 클리블랜드 브라운스 (DB 코치) | 2016–2018: 샌프란시스코 포티나이너스 (DB 코치) | 2024–2025: 그린베이 패커스 (DC)
@@ -248,7 +248,6 @@ Brian Flores,Bill Belichick,Minnesota Vikings,DC,2011–2018: 뉴잉글랜드 �
 Jeff Ulbrich,Robert Saleh,Atlanta Falcons,DC,2015–2020: 애틀랜타 팰컨스 (LB 코치 / assistant HC / 인터림 DC) | 2021–2024: 뉴욕 제츠 (DC) | 2025–현재: 애틀랜타 팰컨스 (DC)
 Ejiro Evero,Vic Fangio,Carolina Panthers,DC,2017–2021: 로스앤젤레스 램스 (세컨더리 코치 / 패스게임 코디네이터) | 2022: 덴버 브롱코스 (DC) | 2023–현재: 캐롤라이나 팬서스 (DC)
 Brandon Staley,Vic Fangio,New Orleans Saints,DC,2020: 로스앤젤레스 램스 (DC) | 2021–2023: 로스앤젤레스 차저스 (HC) | 2024–2025: 샌프란시스코 포티나이너스 (assistant HC / 수비 부감독)
-Todd Bowles,Bruce Arians,Tampa Bay Buccaneers,DC,2013–2014: 애리조나 카디널스 (DC) | 2015–2018: 뉴욕 제츠 (HC) | 2019–2021: 탬파베이 버커니어스 (DC) | 2022–현재: 탬파베이 버커니어스 (HC 겸 플레이콜러)
 Nick Rallis,Jonathan Gannon,Arizona Cardinals,DC,2018–2020: 미네소타 바이킹스 (수비 QC / assistant LB 코치) | 2021–2022: 필라델피아 이글스 (LB 코치) | 2023–현재: 애리조나 카디널스 (DC)
 Chris Shula,Sean McVay,Los Angeles Rams,DC,2017–2023: 로스앤젤레스 램스 (assistant LB / LB 코치 / DB 코치 / 패스러시 코디네이터) | 2024–현재: 로스앤젤레스 램스 (DC)
 Raheem Morris,Monte Kiffin,San Francisco 49ers,DC,2009–2011: 탬파베이 버커니어스 (HC) | 2015–2020: 애틀랜타 팰컨스 (assistant HC / WR 코치 / DC / 인터림 HC) | 2021–2023: 로스앤젤레스 램스 (DC) | 2024–2025: 애틀랜타 팰컨스 (HC)
