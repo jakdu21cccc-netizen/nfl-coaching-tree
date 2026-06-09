@@ -39,6 +39,7 @@ TEAM_LOGOS = {
 
 # --- 0-2. 코치 한줄 설명 데이터베이스 ---
 COACH_SUMMARY = {
+    # HC
     "Joe Brady": "팀 내 공격 코디네이터에서 내부 승진하여 지휘봉을 잡은 패스 전술가.",
     "Jeff Hafley": "그린베이 수비 코디네이터를 거쳐 마이애미의 새로운 수장으로 부임한 수비 전문 감독.",
     "Mike Vrabel": "테네시 감독직 이후 클리블랜드 컨설턴트를 거쳐 패트리어츠에 부임한 베테랑 감독.",
@@ -71,6 +72,7 @@ COACH_SUMMARY = {
     "Sean McVay": "현대 NFL의 공격 전술 트렌드를 선도하며 최연소 우승 기록을 세운 리그 최고 수준의 전술가.",
     "Kyle Shanahan": "현대 오펜스의 핵심인 와이드 존 스킴과 고유의 공격 시스템으로 팀을 리그 최강자로 유지 중인 거장.",
     "Mike Macdonald": "레이븐스의 수비 코디네이터로서 리그 최고 수준의 수비를 구축한 후 시혹스의 신임 감독으로 부임한 수비 전술가.",
+    # OC
     "Pete Carmichael Jr.": "뉴올리언스에서 오랜 기간 드류 브리스와 숀 페이튼을 보좌했던 베테랑 패스 전술가.",
     "Bobby Slowik": "휴스턴의 플레이콜러를 거쳐 마이애미의 새로운 패스게임 시스템을 설계하러 합류한 인물.",
     "Josh McDaniels": "레이더스 감독직 이후 친정팀 뉴잉글랜드의 공격 지휘봉을 다시 잡은 플레이콜러.",
@@ -103,6 +105,7 @@ COACH_SUMMARY = {
     "Nathan Scheelhaase": "내부 승진을 통해 숀 맥베이 감독 아래에서 램스의 새로운 패스게임을 설계하게 된 코치.",
     "Klay Kubiak": "카일 섀너핸 감독 아래에서 단계별로 성장해 팀의 정식 공격 코디네이터 자리에 오른 인물.",
     "Brian Fleury": "포티나이너스의 런게임 코디네이터직을 수행한 후 시혹스에서 첫 플레이콜러 기회를 잡은 전술가.",
+    # DC
     "Jim Leonhard": "덴버의 어시스턴트 HC를 거쳐 버팔로의 수비진을 3-4 포메이션 기반으로 개편하기 위해 부임한 전술가.",
     "Sean Duggan": "그린베이 라인배커 코치 출신으로 제프 하프리 신임 감독 체제의 마이애미 수비 전술을 보좌하는 인물.",
     "Zak Kuhr": "팀 내 라인배커 코치이자 인터림 DC를 거쳐 정식 수비 코디네이터로 보직이 승진된 내부 인사.",
@@ -151,7 +154,7 @@ LEGEND_LIFESPANS = {
     "Chuck Noll": "1932 ~ 2014"
 }
 
-# --- 1. 통합 데이터베이스 (토드 보울스 투잡 데이터 포함) ---
+# --- 1. 통합 데이터베이스 ---
 RAW_DATA = """
 Joe Brady,Sean Payton,Buffalo Bills,HC,2017–2018: 뉴올리언스 세인츠 (공격 어시스턴트) | 2020–2021: 캐롤라이나 팬서스 (OC) | 2022–2023: 버팔로 빌스 (QB 코치) | 2023–2025: 버팔로 빌스 (인터림 / 정식 OC)
 Jeff Hafley,Matt LaFleur,Miami Dolphins,HC,2012–2013: 탬파베이 버커니어스 (공격 어시스턴트 / DB 코치) | 2014–2015: 클리블랜드 브라운스 (DB 코치) | 2016–2018: 샌프란시스코 포티나이너스 (DB 코치) | 2024–2025: 그린베이 패커스 (DC)
@@ -244,7 +247,6 @@ Brian Flores,Bill Belichick,Minnesota Vikings,DC,2011–2018: 뉴잉글랜드 �
 Jeff Ulbrich,Robert Saleh,Atlanta Falcons,DC,2015–2020: 애틀랜타 팰컨스 (LB 코치 / assistant HC / 인터림 DC) | 2021–2024: 뉴욕 제츠 (DC) | 2025–현재: 애틀랜타 팰컨스 (DC)
 Ejiro Evero,Vic Fangio,Carolina Panthers,DC,2017–2021: 로스앤젤레스 램스 (세컨더리 코치 / 패스게임 코디네이터) | 2022: 덴버 브롱코스 (DC) | 2023–현재: 캐롤라이나 팬서스 (DC)
 Brandon Staley,Vic Fangio,New Orleans Saints,DC,2020: 로스앤젤레스 램스 (DC) | 2021–2023: 로스앤젤레스 차저스 (HC) | 2024–2025: 샌프란시스코 포티나이너스 (assistant HC / 수비 부감독)
-Todd Bowles,Bruce Arians,Tampa Bay Buccaneers,DC,2013–2014: 애리조나 카디널스 (DC) | 2015–2018: 뉴욕 제츠 (HC) | 2019–2021: 탬파베이 버커니어스 (DC) | 2022–현재: 탬파베이 버커니어스 (HC 겸 플레이콜러)
 Nick Rallis,Jonathan Gannon,Arizona Cardinals,DC,2018–2020: 미네소타 바이킹스 (수비 QC / assistant LB 코치) | 2021–2022: 필라델피아 이글스 (LB 코치) | 2023–현재: 애리조나 카디널스 (DC)
 Chris Shula,Sean McVay,Los Angeles Rams,DC,2017–2023: 로스앤젤레스 램스 (assistant LB / LB 코치 / DB 코치 / 패스러시 코디네이터) | 2024–현재: 로스앤젤레스 램스 (DC)
 Raheem Morris,Monte Kiffin,San Francisco 49ers,DC,2009–2011: 탬파베이 버커니어스 (HC) | 2015–2020: 애틀랜타 팰컨스 (assistant HC / WR 코치 / DC / 인터림 HC) | 2021–2023: 로스앤젤레스 램스 (DC) | 2024–2025: 애틀랜타 팰컨스 (HC)
@@ -292,7 +294,7 @@ Paul Brown,None,None,Legend,클리블랜드 브라운스, 신시내티 벵갈스
 Chuck Noll,None,None,Legend,피츠버그 스틸러스 HC (슈퍼볼 4회 우승) | 70년대 '스틸 커튼' 왕조를 구축하고 토니 던지를 지도한 위대한 명장
 """
 
-# --- 2. 💡 데이터베이스 파싱 (투잡 코치 완벽 지원 엔진) ---
+# --- 2. 데이터베이스 파싱 (투잡 코치 완벽 지원) ---
 @st.cache_data
 def load_all_coaches():
     mentor_db = {}
@@ -322,7 +324,7 @@ def load_all_coaches():
                     "is_legend": is_legend,
                     "is_active": not is_legend
                 }
-            # 이미 등록된 투잡 코치라면 직책 리스트에 직책을 조용히 추가합니다. (예: ["HC", "DC"])
+            # 이미 등록된 투잡 코치라면 직책 리스트에 직책을 조용히 추가합니다.
             else:
                 if is_legend:
                     coach_db[coach]["is_legend"] = True
@@ -365,6 +367,7 @@ def create_coach_badge(c_name, coach_db):
             
     c_summary = c_summary.replace(" | ", ", ").replace('"', '&quot;')
     
+    # 현역 활동을 하고 있으면 무조건 파란색(현역)으로 뱃지 색상을 띄웁니다.
     color = "#1E88E5" if c_info["is_active"] else "#FF9800"
     link = f"/?coach={urllib.parse.quote(c_name)}"
     
@@ -407,7 +410,7 @@ mode = st.sidebar.radio("🔍 조회 모드", ["🛡️ NFL 현역 스태프", "
 is_viewing_legend = (mode == "🌟 레전드 명예의 전당")
 selected_coach = None
 
-# 💡 'in' 연산자를 사용해 HC 또는 DC 선택 시 모두 반응하게 만듭니다.
+# 'in' 연산자를 사용해 HC 또는 DC 선택 시 모두 반응하게 만듭니다.
 if not is_viewing_legend:
     sel_team = st.sidebar.selectbox("1. 팀을 선택하세요", active_teams, index=default_team_idx)
     sel_pos = st.sidebar.radio("2. 직책을 선택하세요", ["HC", "OC", "DC"], index=default_pos_idx)
@@ -436,7 +439,7 @@ if selected_coach:
             """, 
             unsafe_allow_html=True
         )
-        # 💡 투잡 코치일 경우 직책이 겹쳐서 표시됩니다! (예: HC / DC)
+        # 투잡 코치일 경우 직책이 겹쳐서 표시됩니다! (예: HC / DC)
         display_pos = ' / '.join(info['pos'])
         st.caption(f"{info['team']} | {display_pos}")
         career_info = info["career"]
@@ -454,7 +457,8 @@ if selected_coach:
         
     st.subheader("🌳 코칭 트리 (가르침을 받은 계보)")
     mentors_path = get_mentors(selected_coach, mentor_db)
-    mentor_html = " <span style='color: #4CAF50; font-weight: bold;'>➔</span> ".join([create_coach_badge(c, coach_db) for c in mentors_path])
+    # 💡 이름 순서는 그대로 두고, 화살표 기호만 왼쪽을 가리키도록(⬅) 변경했습니다.
+    mentor_html = " <span style='color: #4CAF50; font-weight: bold;'>⬅</span> ".join([create_coach_badge(c, coach_db) for c in mentors_path])
     st.markdown(
         f'<div style="padding: 1rem; border-radius: 0.5rem; background-color: rgba(76, 175, 80, 0.1); border: 1px solid rgba(76, 175, 80, 0.4); margin-bottom: 1.5rem; line-height: 2;">{mentor_html}</div>', 
         unsafe_allow_html=True
