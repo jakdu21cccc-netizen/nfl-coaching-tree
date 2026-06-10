@@ -540,7 +540,6 @@ st.markdown(f"> **💡 가문 특징:** *{MASTER_TREES[selected_master]}*")
 hierarchy_data = build_d3_hierarchy(selected_master, mentor_db, coach_db)
 json_data_str = json.dumps(hierarchy_data)
 
-# 💡 목표 인물로 트리를 자동 펼침(Auto-Expand)하기 위해 파이썬 변수 전달
 target_coach_js = selected_coach if selected_coach else ""
 
 html_template = """
@@ -590,7 +589,6 @@ html_template = """
         root.x0 = 0;
         root.y0 = 0;
 
-        // 💡 [핵심] 자동 펼침 로직 (선택된 코치 경로만 열어두고 나머진 접기)
         function collapseAll(d) {
             if (d.children) {
                 d._children = d.children;
@@ -649,11 +647,10 @@ html_template = """
                 .attr('class', 'node')
                 .attr('transform', d => `translate(${source.y0},${source.x0})`);
 
-            // 아이콘(로고/원형) 클릭 시 트리 폴더 열고 접기
+            // 아이콘(로고/원형) 클릭 시 폴더 열고 접기 기능
             nodeEnter.each(function(d) {
                 const g = d3.select(this);
                 let element;
-                // 💡 [핵심] 트리가 열렸을 때 현역이면 로고 이미지를 삽입!
                 if (d.data.is_active && d.data.logo) {
                     element = g.append('image')
                      .attr('href', d.data.logo)
@@ -681,8 +678,12 @@ html_template = """
                 });
             });
 
-            // 텍스트 클릭 시 프로필 페이지로 연동
-            nodeEnter.append('text')
+            // 💡 [클릭 이동 해결] 자바스크립트 우회 불가 문제를 순수 HTML 하이퍼링크로 돌파!
+            const textAnchor = nodeEnter.append('a')
+                .attr('target', '_parent')
+                .attr('href', d => '?coach=' + encodeURIComponent(d.data.name));
+
+            textAnchor.append('text')
                 .attr('dy', '.35em')
                 .attr('x', d => d.children || d._children ? -18 : 18)
                 .attr('text-anchor', d => d.children || d._children ? 'end' : 'start')
@@ -691,11 +692,7 @@ html_template = """
                     if(d.data.pos) display += ' (' + d.data.pos + ')';
                     return display;
                 })
-                .style('fill', d => d.data.is_active ? '#1E88E5' : '#FF9800')
-                .on('click', function(event, d) {
-                    event.stopPropagation(); 
-                    window.parent.location.search = '?coach=' + encodeURIComponent(d.data.name);
-                });
+                .style('fill', d => d.data.is_active ? '#1E88E5' : '#FF9800');
 
             const nodeUpdate = nodeEnter.merge(node);
 
