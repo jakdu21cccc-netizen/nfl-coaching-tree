@@ -484,3 +484,39 @@ if selected_coach:
         st.warning("등록된 경력 정보가 없습니다.")
 else:
     st.warning("선택하신 조건에 해당하는 데이터가 없습니다.")
+
+    st.subheader("🌲 코칭 트리 시각화 (조직도)")
+    
+    tree_html_lines = []
+    
+    # 1. 대스승부터 현재 코치까지 위에서 아래로(⬇) 내려오는 구조
+    top_down_mentors = mentors_path[::-1] # 대스승이 먼저 오도록 배열 뒤집기
+    
+    for i, mentor in enumerate(top_down_mentors):
+        badge = create_coach_badge(mentor, coach_db)
+        tree_html_lines.append(f'<div style="margin: 5px 0;">{badge}</div>')
+        
+        # 마지막 노드(현재 코치)가 아니면 아래 화살표 추가
+        if i < len(top_down_mentors) - 1:
+            tree_html_lines.append('<div style="color: #9E9E9E; font-size: 24px; margin: -2px 0;">⬇</div>')
+
+    # 2. 현재 코치 아래로 가지치기 (제자들이 가로로 펼쳐짐)
+    if disciples:
+        tree_html_lines.append('<div style="color: #9E9E9E; font-size: 24px; margin: -2px 0;">⬇</div>')
+        
+        # 제자들을 가로로 예쁘게 나열하는 Flex 컨테이너
+        disciples_badges = [create_coach_badge(d, coach_db) for d in disciples]
+        disciples_html = '<div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-top: 10px;">'
+        for db in disciples_badges:
+            disciples_html += f'<div>{db}</div>'
+        disciples_html += '</div>'
+        
+        tree_html_lines.append(disciples_html)
+
+    # 3. 회색 박스 안에 전체 트리 렌더링
+    final_tree_html = f"""
+    <div style="background-color: rgba(128, 128, 128, 0.05); padding: 25px 10px; border-radius: 10px; border: 1px solid rgba(128, 128, 128, 0.2); text-align: center; overflow-x: auto; margin-top: 10px;">
+        {"".join(tree_html_lines)}
+    </div>
+    """
+    st.markdown(final_tree_html, unsafe_allow_html=True)
