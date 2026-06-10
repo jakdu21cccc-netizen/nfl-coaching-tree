@@ -1,5 +1,6 @@
 import streamlit as st
 import urllib.parse
+import json
 
 # --- 0-1. 팀 로고 이미지 URL 데이터베이스 (ESPN 공식 CDN) ---
 TEAM_LOGOS = {
@@ -154,6 +155,25 @@ LEGEND_LIFESPANS = {
     "Chuck Noll": "1932 ~ 2014"
 }
 
+# --- 0-4. 15대 명문가 한줄 요약 데이터베이스 ---
+MASTER_TREES = {
+    "Paul Brown": "현대 NFL 오펜스의 근간이자 웨스트 코스트 및 존 블로킹 시스템의 절대적 뿌리",
+    "Ray Perkins": "빌 파셀스와 빌 벨리칙, 션 페이튼으로 이어지는 강력한 수비 및 팀 재건의 제국",
+    "Chuck Noll": "토니 던지와 프랭크 라이크를 거쳐 현대의 조직력 중심 명장들을 배출한 명문가",
+    "Dom Capers": "빅 판지오를 중심으로 현대 NFL의 트렌디한 '투 하이 셸' 방어망을 구축한 수비 가문",
+    "Earle Bruce": "피트 캐럴의 리더십을 거쳐 댄 퀸 등 선굵은 하이퍼 디펜시브 마인드를 낳은 계보",
+    "Woody Hayes": "보 솀베클러와 하보 형제를 통해 대학과 프로 무대를 모두 정복한 피지컬 풋볼의 명가",
+    "Sam Rutigliano": "마티 쇼텐하이머의 '마티볼' 철학을 기반으로 굵직한 공수 밸런스를 다진 계보",
+    "Hal Mumme": "마이크 리치와 클리프 킹스베리로 이어지는 패싱 게임의 대혁명 '에어 레이드'의 고향",
+    "Monte Kiffin": "리그의 패러다임을 바꾼 '탬파 2 수비' 전술을 집대성하고 전파한 정통 수비 가문",
+    "Jimmy Johnson": "드래프트 가치 차트와 독창적인 선수단 빌딩 시스템으로 카우보이스 왕조를 이끈 파벌",
+    "Bear Bryant": "브루스 아리안스와 토드 보울스로 이어지는 선굵은 다운필드 패싱 공격 사단",
+    "Marvin Lewis": "역사적인 2000년대 레이븐스 명수비를 기반으로 토드 몽켄 등 정교한 전술가를 낳은 계보",
+    "Bum Phillips": "웨이드 필립스와 밴스 조셉으로 이어지는 3-4 수비 스킴의 정통 계승자 가문",
+    "Buddy Ryan": "NFL 역사상 가장 위력적인 압박 전술인 '46 디펜스'의 혈통을 잇는 독창적 수비 가문",
+    "Jim Johnson": "창의적이고 맹렬한 블리츠 패키지로 치프스 왕조의 스파뇰로 등 변칙 수비 거장을 키워낸 안방"
+}
+
 # --- 1. 통합 데이터베이스 ---
 RAW_DATA = """
 Joe Brady,Sean Payton,Buffalo Bills,HC,2017–2018: 뉴올리언스 세인츠 (공격 어시스턴트) | 2020–2021: 캐롤라이나 팬서스 (OC) | 2022–2023: 버팔로 빌스 (QB 코치) | 2023–2025: 버팔로 빌스 (인터림 / 정식 OC)
@@ -294,7 +314,7 @@ Paul Brown,None,None,Legend,클리블랜드 브라운스, 신시내티 벵갈스
 Chuck Noll,None,None,Legend,피츠버그 스틸러스 HC (슈퍼볼 4회 우승) | 70년대 '스틸 커튼' 왕조를 구축하고 토니 던지를 지도한 위대한 명장
 """
 
-# --- 2. 데이터베이스 파싱 (투잡 코치 완벽 지원) ---
+# --- 2. 데이터 파싱 ---
 @st.cache_data
 def load_all_coaches():
     mentor_db = {}
@@ -308,13 +328,11 @@ def load_all_coaches():
             coach, mentor, team, pos, career = [p.strip() for p in parts]
             clean_career = career.replace('"', '').replace("'", "")
             
-            # 스승 족보 저장
             if coach not in mentor_db:
                 mentor_db[coach] = None if mentor == "None" else mentor
             
             is_legend = (team == "None" and pos == "Legend")
             
-            # 딕셔너리에 처음 등록되는 코치라면 직책을 '리스트(List)' 형태로 만듭니다!
             if coach not in coach_db:
                 coach_db[coach] = {
                     "team": team if not is_legend else "",
@@ -324,7 +342,6 @@ def load_all_coaches():
                     "is_legend": is_legend,
                     "is_active": not is_legend
                 }
-            # 이미 등록된 투잡 코치라면 직책 리스트에 직책을 조용히 추가합니다.
             else:
                 if is_legend:
                     coach_db[coach]["is_legend"] = True
@@ -351,7 +368,25 @@ def get_mentors(coach_name, mentor_db):
 def get_disciples(coach_name, mentor_db):
     return [child for child, mentor in mentor_db.items() if mentor == coach_name]
 
-# --- 4. 코치 이름용 클릭형 뱃지 생성기 ---
+# --- 4. D3.js 연동용 계층 JSON 동적 생성기 ---
+def build_d3_hierarchy(node_name, mentor_db, coach_db):
+    node_data = {"name": node_name}
+    if node_name in coach_db:
+        info = coach_db[node_name]
+        node_data["is_active"] = info["is_active"]
+        node_data["logo"] = TEAM_LOGOS.get(info["team"], "") if info["is_active"] else ""
+        node_data["pos"] = ' / '.join(info['pos']) if isinstance(info['pos'], list) else info['pos']
+    else:
+        node_data["is_active"] = False
+        node_data["logo"] = ""
+        node_data["pos"] = ""
+        
+    children = [child for child, mentor in mentor_db.items() if mentor == node_name]
+    if children:
+        node_data["children"] = [build_d3_hierarchy(child, mentor_db, coach_db) for child in children]
+    return node_data
+
+# --- 5. 코치 이름용 클릭형 뱃지 생성기 ---
 def create_coach_badge(c_name, coach_db):
     if c_name not in coach_db:
         return f'<span style="border-bottom: 2px dotted #9E9E9E; font-weight: bold; padding: 2px;">{c_name}</span>'
@@ -367,13 +402,12 @@ def create_coach_badge(c_name, coach_db):
             
     c_summary = c_summary.replace(" | ", ", ").replace('"', '&quot;')
     
-    # 현역 활동을 하고 있으면 무조건 파란색(현역)으로 뱃지 색상을 띄웁니다.
     color = "#1E88E5" if c_info["is_active"] else "#FF9800"
     link = f"/?coach={urllib.parse.quote(c_name)}"
     
     return f'<a href="{link}" target="_self" title="{c_summary}" style="cursor: pointer; border-bottom: 2px solid {color}; font-weight: bold; color: {color}; text-decoration: none; padding: 2px 4px;">{c_name}</a>'
 
-# --- 5. UI 렌더링 ---
+# --- 6. UI 렌더링 ---
 st.set_page_config(page_title="NFL Coaching Tree", layout="wide")
 
 mentor_db, coach_db = load_all_coaches()
@@ -387,14 +421,13 @@ default_legend_idx = 0
 active_teams = sorted(list(set(i["team"] for i in coach_db.values() if i["is_active"])))
 legend_list = sorted([name for name, i in coach_db.items() if i["is_legend"]])
 
-# 링크를 타고 들어온 경우 셋팅
+# 링크 셋팅
 if target_coach in coach_db:
     info = coach_db[target_coach]
     if info["is_active"]:
         default_mode_idx = 0
         if info["team"] in active_teams:
             default_team_idx = active_teams.index(info["team"])
-        # 직책 리스트의 첫 번째 값을 선택하여 띄워줍니다.
         if info["pos"]:
             first_pos = info["pos"][0]
             if first_pos in ["HC", "OC", "DC"]:
@@ -410,7 +443,6 @@ mode = st.sidebar.radio("🔍 조회 모드", ["🛡️ NFL 현역 스태프", "
 is_viewing_legend = (mode == "🌟 레전드 명예의 전당")
 selected_coach = None
 
-# 'in' 연산자를 사용해 HC 또는 DC 선택 시 모두 반응하게 만듭니다.
 if not is_viewing_legend:
     sel_team = st.sidebar.selectbox("1. 팀을 선택하세요", active_teams, index=default_team_idx)
     sel_pos = st.sidebar.radio("2. 직책을 선택하세요", ["HC", "OC", "DC"], index=default_pos_idx)
@@ -439,7 +471,6 @@ if selected_coach:
             """, 
             unsafe_allow_html=True
         )
-        # 투잡 코치일 경우 직책이 겹쳐서 표시됩니다! (예: HC / DC)
         display_pos = ' / '.join(info['pos'])
         st.caption(f"{info['team']} | {display_pos}")
         career_info = info["career"]
@@ -457,10 +488,7 @@ if selected_coach:
         
     st.subheader("🌳 코칭 트리 (가르침을 받은 계보)")
     mentors_path = get_mentors(selected_coach, mentor_db)
-    
-    # 💡 화살표 방향을 ⬅ 로 바꾸고 굵기(bold)를 제거했습니다!
     mentor_html = " <span style='color: #4CAF50;'>⬅</span> ".join([create_coach_badge(c, coach_db) for c in mentors_path])
-    
     st.markdown(
         f'<div style="padding: 1rem; border-radius: 0.5rem; background-color: rgba(76, 175, 80, 0.1); border: 1px solid rgba(76, 175, 80, 0.4); margin-bottom: 1.5rem; line-height: 2;">{mentor_html}</div>', 
         unsafe_allow_html=True
@@ -484,43 +512,251 @@ if selected_coach:
                 st.markdown(f"🔹 **{item}**")
     else:
         st.warning("등록된 경력 정보가 없습니다.")
-
-    # 💡 들여쓰기가 어긋났던 조직도 시각화 코드를 제 위치로 복구했습니다!
-    st.subheader("🌲 코칭 트리 시각화 (조직도)")
-    
-    tree_html_lines = []
-    
-    # 1. 대스승부터 현재 코치까지 위에서 아래로(⬇) 내려오는 구조
-    top_down_mentors = mentors_path[::-1] # 대스승이 먼저 오도록 배열 뒤집기
-    
-    for i, mentor in enumerate(top_down_mentors):
-        badge = create_coach_badge(mentor, coach_db)
-        tree_html_lines.append(f'<div style="margin: 5px 0;">{badge}</div>')
-        
-        # 마지막 노드(현재 코치)가 아니면 아래 화살표 추가
-        if i < len(top_down_mentors) - 1:
-            tree_html_lines.append('<div style="color: #9E9E9E; font-size: 24px; margin: -2px 0;">⬇</div>')
-
-    # 2. 현재 코치 아래로 가지치기 (제자들이 가로로 펼쳐짐)
-    if disciples:
-        tree_html_lines.append('<div style="color: #9E9E9E; font-size: 24px; margin: -2px 0;">⬇</div>')
-        
-        # 제자들을 가로로 예쁘게 나열하는 Flex 컨테이너
-        disciples_badges = [create_coach_badge(d, coach_db) for d in disciples]
-        disciples_html = '<div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-top: 10px;">'
-        for db in disciples_badges:
-            disciples_html += f'<div>{db}</div>'
-        disciples_html += '</div>'
-        
-        tree_html_lines.append(disciples_html)
-
-    # 3. 회색 박스 안에 전체 트리 렌더링
-    final_tree_html = f"""
-    <div style="background-color: rgba(128, 128, 128, 0.05); padding: 25px 10px; border-radius: 10px; border: 1px solid rgba(128, 128, 128, 0.2); text-align: center; overflow-x: auto; margin-top: 10px;">
-        {"".join(tree_html_lines)}
-    </div>
-    """
-    st.markdown(final_tree_html, unsafe_allow_html=True)
-
 else:
     st.warning("선택하신 조건에 해당하는 데이터가 없습니다.")
+
+# =====================================================================
+# 🎯 7. 15대 명문가 마스터 익스플로러 엔진 (접이식)
+# =====================================================================
+st.markdown("---")
+st.header("📊 NFL 15대 명문가 마스터 트리 익스플로러 (접이식)")
+
+master_roots = sorted(list(MASTER_TREES.keys()))
+
+root_mentor = mentors_path[-1] if selected_coach and mentors_path else None
+default_master_idx = 0
+if root_mentor in master_roots:
+    default_master_idx = master_roots.index(root_mentor)
+
+selected_master = st.selectbox(
+    "조회할 명문 가문을 선택하세요", 
+    master_roots, 
+    index=default_master_idx, 
+    format_func=lambda x: f"👑 {x} 가문"
+)
+
+st.markdown(f"> **💡 가문 특징:** *{MASTER_TREES[selected_master]}*")
+
+hierarchy_data = build_d3_hierarchy(selected_master, mentor_db, coach_db)
+json_data_str = json.dumps(hierarchy_data)
+
+# 💡 목표 인물로 트리를 자동 펼침(Auto-Expand)하기 위해 파이썬 변수 전달
+target_coach_js = selected_coach if selected_coach else ""
+
+html_template = """
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; background-color: #ffffff; overflow: hidden; }
+        .node { cursor: default; }
+        .node circle { fill: #fff; stroke: #FF9800; stroke-width: 2.5px; cursor: pointer; }
+        .node image { cursor: pointer; }
+        .node text { font-size: 13px; font-weight: bold; fill: #333333; cursor: pointer; }
+        .node text:hover { text-decoration: underline; fill: #d32f2f !important; }
+        .link { fill: none; stroke: #e0e0e0; stroke-width: 2px; }
+        #canvas { width: 100%; height: 580px; cursor: grab; }
+        #canvas:active { cursor: grabbing; }
+    </style>
+</head>
+<body>
+    <div id="canvas"></div>
+    <script>
+        const rawData = __JSON_DATA_HERE__;
+        const targetCoachName = "__TARGET_COACH_NAME__";
+        
+        const margin = {top: 20, right: 120, bottom: 20, left: 120},
+              width = window.innerWidth,
+              height = 580;
+
+        let i = 0, duration = 600, root;
+
+        const svg = d3.select("#canvas").append("svg")
+            .attr("width", "100%")
+            .attr("height", height)
+            .call(d3.zoom().on("zoom", function (event) {
+                svgGroup.attr("transform", event.transform);
+            }))
+            .append("g");
+
+        const svgGroup = svg.append("g")
+            .attr("transform", "translate(" + margin.left + "," + (height/2 - 20) + ")");
+
+        const treemap = d3.tree().nodeSize([45, 220]);
+
+        root = d3.hierarchy(rawData, d => d.children);
+        root.x0 = 0;
+        root.y0 = 0;
+
+        // 💡 [핵심] 자동 펼침 로직 (선택된 코치 경로만 열어두고 나머진 접기)
+        function collapseAll(d) {
+            if (d.children) {
+                d._children = d.children;
+                d._children.forEach(collapseAll);
+                d.children = null;
+            }
+        }
+
+        function containsTarget(d, target) {
+            if (d.data.name === target) return true;
+            let found = false;
+            if (d.children) {
+                d.children.forEach(child => { if(containsTarget(child, target)) found = true; });
+            }
+            if (d._children) {
+                d._children.forEach(child => { if(containsTarget(child, target)) found = true; });
+            }
+            return found;
+        }
+
+        function expandPathToTarget(d, target) {
+            if (containsTarget(d, target)) {
+                if (d._children) {
+                    d.children = d._children;
+                    d._children = null;
+                }
+                if (d.children) {
+                    d.children.forEach(child => expandPathToTarget(child, target));
+                }
+            } else {
+                collapseAll(d);
+            }
+        }
+
+        if (root.children) {
+            if (targetCoachName && targetCoachName !== "") {
+                root.children.forEach(child => expandPathToTarget(child, targetCoachName));
+            } else {
+                root.children.forEach(collapseAll);
+            }
+        }
+
+        update(root);
+
+        function update(source) {
+            const treeData = treemap(root);
+            const nodes = treeData.descendants(),
+                  links = treeData.links();
+
+            nodes.forEach(d => d.y = d.depth * 230);
+
+            const node = svgGroup.selectAll('g.node')
+                .data(nodes, d => d.id || (d.id = ++i));
+
+            const nodeEnter = node.enter().append('g')
+                .attr('class', 'node')
+                .attr('transform', d => `translate(${source.y0},${source.x0})`);
+
+            // 아이콘(로고/원형) 클릭 시 트리 폴더 열고 접기
+            nodeEnter.each(function(d) {
+                const g = d3.select(this);
+                let element;
+                // 💡 [핵심] 트리가 열렸을 때 현역이면 로고 이미지를 삽입!
+                if (d.data.is_active && d.data.logo) {
+                    element = g.append('image')
+                     .attr('href', d.data.logo)
+                     .attr('x', -14)
+                     .attr('y', -14)
+                     .attr('width', 28)
+                     .attr('height', 28)
+                     .style('filter', 'drop-shadow(0px 2px 4px rgba(0,0,0,0.15))');
+                } else {
+                    element = g.append('circle')
+                     .attr('r', 7)
+                     .style("fill", d => d._children ? "#FF9800" : "#fff");
+                }
+
+                element.on('click', function(event, d) {
+                    event.stopPropagation();
+                    if (d.children) {
+                        d._children = d.children;
+                        d.children = null;
+                    } else {
+                        d.children = d._children;
+                        d._children = null;
+                    }
+                    update(d);
+                });
+            });
+
+            // 텍스트 클릭 시 프로필 페이지로 연동
+            nodeEnter.append('text')
+                .attr('dy', '.35em')
+                .attr('x', d => d.children || d._children ? -18 : 18)
+                .attr('text-anchor', d => d.children || d._children ? 'end' : 'start')
+                .text(d => {
+                    let display = d.data.name;
+                    if(d.data.pos) display += ' (' + d.data.pos + ')';
+                    return display;
+                })
+                .style('fill', d => d.data.is_active ? '#1E88E5' : '#FF9800')
+                .on('click', function(event, d) {
+                    event.stopPropagation(); 
+                    window.parent.location.search = '?coach=' + encodeURIComponent(d.data.name);
+                });
+
+            const nodeUpdate = nodeEnter.merge(node);
+
+            nodeUpdate.transition()
+                .duration(duration)
+                .attr('transform', d => `translate(${d.y},${d.x})`);
+
+            nodeUpdate.select('circle')
+                .attr('r', 7)
+                .style("fill", d => d._children ? "#FF9800" : "#fff");
+
+            const nodeExit = node.exit().transition()
+                .duration(duration)
+                .attr('transform', d => `translate(${source.y},${source.x})`)
+                .remove();
+
+            nodeExit.select('circle').attr('r', 1e-6);
+            nodeExit.select('image').attr('width', 1e-6).attr('height', 1e-6);
+            nodeExit.select('text').style('fill-opacity', 1e-6);
+
+            const link = svgGroup.selectAll('path.link')
+                .data(links, d => d.target.id);
+
+            const linkEnter = link.enter().insert('path', "g")
+                .attr('class', 'link')
+                .attr('d', d => {
+                    const o = {x: source.x0, y: source.y0};
+                    return diagonal(o, o);
+                });
+
+            const linkUpdate = linkEnter.merge(link);
+
+            linkUpdate.transition()
+                .duration(duration)
+                .attr('d', d => diagonal(d.source, d.target));
+
+            link.exit().transition()
+                .duration(duration)
+                .attr('d', d => {
+                    const o = {x: source.x, y: source.y};
+                    return diagonal(o, o);
+                })
+                .remove();
+
+            nodes.forEach(d => {
+                d.x0 = d.x;
+                d.y0 = d.y;
+            });
+
+            function diagonal(s, d) {
+                return `M ${s.y} ${s.x}
+                        C ${ (s.y + d.y) / 2 } ${s.x},
+                          ${ (s.y + d.y) / 2 } ${d.x},
+                          ${d.y} ${d.x}`;
+            }
+        }
+    </script>
+</body>
+</html>
+"""
+
+d3_collapsible_html = html_template.replace("__JSON_DATA_HERE__", json_data_str).replace("__TARGET_COACH_NAME__", target_coach_js)
+
+st.components.v1.html(d3_collapsible_html, height=580)
