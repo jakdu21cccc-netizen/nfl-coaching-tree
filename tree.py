@@ -458,7 +458,7 @@ if selected_coach:
     st.subheader("🌳 코칭 트리 (가르침을 받은 계보)")
     mentors_path = get_mentors(selected_coach, mentor_db)
     # 💡 이름 순서는 그대로 두고, 화살표 기호만 왼쪽을 가리키도록(⬅) 변경했습니다.
-    mentor_html = " <span style='color: #4CAF50; font-weight: bold;'>⬅</span> ".join([create_coach_badge(c, coach_db) for c in mentors_path])
+    mentor_html = " <span style='color: #4CAF50;'>⬅</span> ".join([create_coach_badge(c, coach_db) for c in mentors_path])
     st.markdown(
         f'<div style="padding: 1rem; border-radius: 0.5rem; background-color: rgba(76, 175, 80, 0.1); border: 1px solid rgba(76, 175, 80, 0.4); margin-bottom: 1.5rem; line-height: 2;">{mentor_html}</div>', 
         unsafe_allow_html=True
